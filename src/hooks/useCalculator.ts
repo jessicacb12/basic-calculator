@@ -58,8 +58,16 @@ const useCalculator = () => {
             const current = [...prev];
             const parsedValue = parseInt(value, 10);
             if (canCalculate) {
-                // operator
-                if (isNaN(parsedValue)) {
+                if (value === OperatorSignEnum.DELETE && current.length) {
+                    let lastInsertedValue = current[current.length - 1];
+
+                    if (lastInsertedValue.length > 1){
+                        current[current.length - 1] = lastInsertedValue.substring(0, lastInsertedValue.length - 1);
+                    } else {
+                        current.pop();
+                    }
+                } else if (isNaN(parsedValue)) {
+                    // operator
                     switch(value) {
                         case OperatorSignEnum.ADD:
                         case OperatorSignEnum.MULTIPLY:
