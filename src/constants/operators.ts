@@ -2,7 +2,7 @@ enum OperatorSignEnum {
     ADD= '+',
     SUBSTRACT= '-',
     MULTIPLY= 'x',
-    DIVIDE= '/',
+    DIVIDE= '÷',
     DECIMAL= '.',
     DELETE='<-',
     EQUAL='=',

@@ -18,8 +18,6 @@ const CalculatorButton = (props: CalculatorButtonProps) => {
     switch (value) {
       case OperatorSignEnum.DELETE:
         return <>&#8592;</>;
-      case OperatorSignEnum.DIVIDE:
-        return <>&#247;</>;
       default:
         return value;
     }

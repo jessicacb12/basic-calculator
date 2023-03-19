@@ -16,7 +16,9 @@ const Calculator = () => {
 
   return (
     <MainContainer>
-      <CalculatorScreen>{calculation.join(" ")}</CalculatorScreen>
+      <CalculatorScreen data-testid="calculator-screen">
+        {calculation.join(" ")}
+      </CalculatorScreen>
       <CalculatorButton
         onClick={insertIntoCalculator}
         disabled={!isOn}

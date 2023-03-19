@@ -19,6 +19,7 @@ const useCalculator = () => {
         for (const value of calculation) {
             const parsedValue = parseInt(value, 10);
 
+            // number
             if (!isNaN(parsedValue)) {
                 if (!total) total = parsedValue;
                 else if (operator) {
@@ -29,14 +30,18 @@ const useCalculator = () => {
                         case OperatorSignEnum.MULTIPLY:
                             total *= parsedValue;
                             break;
+                        case OperatorSignEnum.DIVIDE:
+                            total /= parsedValue;
+                            break;
+                        case OperatorSignEnum.SUBSTRACT:
+                            total -= parsedValue;
+                            break;
                         default:
                             break;
                     }
                     operator = undefined;
                 }
-            } else {
-                operator = value as OperatorSignEnum;
-            }
+            } else operator = value as OperatorSignEnum;
         }
         return total;
     }
@@ -52,31 +57,55 @@ const useCalculator = () => {
         insertIntoCalculator: (value: string | OperatorSignEnum) => setCalculation(prev => {
             const current = [...prev];
             const parsedValue = parseInt(value, 10);
-
-            // operator
-            if (isNaN(parsedValue)) {
-                switch(value) {
-                    case OperatorSignEnum.ADD:
-                    case OperatorSignEnum.MULTIPLY:
-                        if (current.length && !isNaN(parseInt(current[current.length - 1], 10)))
+            if (canCalculate) {
+                // operator
+                if (isNaN(parsedValue)) {
+                    switch(value) {
+                        case OperatorSignEnum.ADD:
+                        case OperatorSignEnum.MULTIPLY:
+                        case OperatorSignEnum.DIVIDE:
+                            if (current.length && !isNaN(parseInt(current[current.length - 1], 10)))
+                                current.push(value);
+                            break;
+                        case OperatorSignEnum.SUBSTRACT:
+                            // if this is the first char
+                            // then append it as part of number
+                            if (!current.length)
+                                current[0] = value;
+                            else if ( // no such thing as - 3 times in a row
+                                !(
+                                    current.length > 2 &&
+                                    current[current.length - 1] === OperatorSignEnum.SUBSTRACT &&
+                                    current[current.length - 2] === OperatorSignEnum.SUBSTRACT
+                                )
+                            )
+                                current.push(value);
+                            break;
+                        case OperatorSignEnum.EQUAL:
+                            if (current.length > 1 && !isNaN(parseInt(current[current.length - 1], 10))) {
+                                current.push(value);
+                                current.push(String(calculateAllValues()));
+                                setCanCalculate(false);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    if (current.length) {
+                        // if previously is operator
+                        if (isNaN(parseInt(current[current.length - 1], 10)) &&
+                            current.length > 1 && // and length > 1. If prev is operator but length is 1, then maybe it's trying to calculate -[number]
+                            (
+                                current[current.length - 1] !== OperatorSignEnum.SUBSTRACT || // previously not a -
+                                !isNaN(parseInt(current[current.length - 2], 10)) // or not trying to do [operator]-
+                            )
+                        ) {
                             current.push(value);
-                        break;
-                    case OperatorSignEnum.EQUAL:
-                        if (current.length && !isNaN(parseInt(current[current.length - 1], 10))) {
-                            current.push(value);
-                            current.push(String(calculateAllValues()));
-                            setCanCalculate(false);
                         }
-                        break;
-                    default:
-                        break;
+                        else current[current.length - 1] += value; // else concate with previous
+                    } else current[0] = value;
                 }
-            } else if (canCalculate) {
-                // if previously is operator then push new
-                // else concate with previous
-                if (isNaN(parseInt(current[current.length - 1], 10)) && current[current.length - 1] !== OperatorSignEnum.SUBSTRACT)
-                    current.push(value);
-                else current[current.length - 1] += value;
             }
             return current;
         })
