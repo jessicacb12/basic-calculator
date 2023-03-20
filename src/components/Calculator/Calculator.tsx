@@ -17,7 +17,7 @@ const Calculator = () => {
   return (
     <MainContainer>
       <CalculatorScreen data-testid="calculator-screen">
-        {calculation.join(" ")}
+        {calculation.length ? <p>{calculation.join(" ")}</p> : null}
       </CalculatorScreen>
       <CalculatorButton
         onClick={insertIntoCalculator}

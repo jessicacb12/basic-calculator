@@ -11,15 +11,20 @@ export const MainContainer = styled.div({
     gridTemplateColumns: 'repeat(10, 1fr)',
 });
 
-export const CalculatorScreen = styled.div({
-    gridColumn: '2 / -3',
-    borderRadius: '8px',
-    fontSize: '18px',
-    fontWeight: '800',
-    padding: '7px 4px 0',
-    color: INDIGO,
-    border: `2px solid ${INDIGO}`,
-})
+export const CalculatorScreen = styled.div`
+    grid-column: 2 / -3;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 800;
+    padding: 7px 4px 0;
+    color: ${INDIGO};
+    border: 2px solid ${INDIGO};
+    & p {
+        margin: 0;
+        white-space: nowrap;
+        overflow: scroll;
+    }
+`;
 
 export const OnOffButton = styled.button`
     grid-row: 3;

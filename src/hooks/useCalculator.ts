@@ -17,8 +17,7 @@ const useCalculator = () => {
         let operator: OperatorSignEnum | undefined = undefined;
 
         for (const value of calculation) {
-            const parsedValue = parseInt(value, 10);
-
+            const parsedValue = parseFloat(value);
             // number
             if (!isNaN(parsedValue)) {
                 if (!total) total = parsedValue;
@@ -46,6 +45,13 @@ const useCalculator = () => {
         return total;
     }
 
+    const removeEndingDecimalValue = (lastInsertedValue: string) => {
+        // delete decimal point if it ends the prev number
+        if (lastInsertedValue.endsWith(OperatorSignEnum.DECIMAL))
+            return lastInsertedValue.substring(0, lastInsertedValue.length - 1);
+        return lastInsertedValue;
+    }
+
     return {
         isOn,
         calculation,
@@ -69,11 +75,21 @@ const useCalculator = () => {
                 } else if (isNaN(parsedValue)) {
                     // operator
                     switch(value) {
+                        case OperatorSignEnum.DECIMAL:
+                            if (
+                                current.length && // should not at the beginning of calculation
+                                !isNaN(parseInt(current[current.length - 1])) && // should not at the beginning of number
+                                !current[current.length - 1].includes(OperatorSignEnum.DECIMAL) // should not exist more than 1 decimal in a number
+                            )
+                                current[current.length - 1] += value;
+                            break;
                         case OperatorSignEnum.ADD:
                         case OperatorSignEnum.MULTIPLY:
                         case OperatorSignEnum.DIVIDE:
-                            if (current.length && !isNaN(parseInt(current[current.length - 1], 10)))
+                            if (current.length && !isNaN(parseInt(current[current.length - 1], 10))) {
+                                current[current.length - 1] = removeEndingDecimalValue(current[current.length - 1]);
                                 current.push(value);
+                            }
                             break;
                         case OperatorSignEnum.SUBSTRACT:
                             // if this is the first char
@@ -86,11 +102,14 @@ const useCalculator = () => {
                                     current[current.length - 1] === OperatorSignEnum.SUBSTRACT &&
                                     current[current.length - 2] === OperatorSignEnum.SUBSTRACT
                                 )
-                            )
+                            ){
+                                current[current.length - 1] = removeEndingDecimalValue(current[current.length - 1]);
                                 current.push(value);
+                            }
                             break;
                         case OperatorSignEnum.EQUAL:
                             if (current.length > 1 && !isNaN(parseInt(current[current.length - 1], 10))) {
+                                current[current.length - 1] = removeEndingDecimalValue(current[current.length - 1]);
                                 current.push(value);
                                 current.push(String(calculateAllValues()));
                                 setCanCalculate(false);
