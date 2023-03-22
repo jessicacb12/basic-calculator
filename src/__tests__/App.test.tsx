@@ -120,4 +120,28 @@ describe("Calculator App", () => {
       await screen.findByTestId("calculator-screen")
     ).toBeEmptyDOMElement();
   });
+
+  test("should be able to prioritize multiplication and division before other calculations", async () => {
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "5" }));
+    fireEvent.click(await screen.findByRole("button", { name: "+" }));
+    fireEvent.click(await screen.findByRole("button", { name: "3" }));
+
+    fireEvent.click(await screen.findByRole("button", { name: "x" }));
+
+    fireEvent.click(await screen.findByRole("button", { name: "4" }));
+    fireEvent.click(await screen.findByRole("button", { name: "÷" }));
+    fireEvent.click(await screen.findByRole("button", { name: "2" }));
+    fireEvent.click(await screen.findByRole("button", { name: "=" }));
+
+    expect(await screen.findByTestId("calculator-screen")).toHaveTextContent(
+      "5 + 3 x 4 ÷ 2 = 11"
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: "C" }));
+    expect(
+      await screen.findByTestId("calculator-screen")
+    ).toBeEmptyDOMElement();
+  });
 });
